@@ -2,17 +2,32 @@
 {% block title %}To-Do App{% endblock %}
 
 {% block content %}
-  <div class="jumbotron">
-    <h1 class="display-4">To-Do App</h1>
-    <p class="lead">Just another to-do app.</p>
-  </div>
-
-  <div class="row">
-    <div class="col-md-12">
-      <h2>Items</h2>
-      <ul class="list-group mb-4">
-        <!-- List the todo items here -->
-      </ul>
+    <div class="jumbotron">
+        <h1 class="display-4">To-Do App</h1>
+        <p class="lead">Just another to-do app.</p>
     </div>
-  </div>
+
+    <form action="/item" method="post">
+        <div>
+            <label for="name">Task to add: </label>
+            <input type="text" name="name" id="name" required/>
+        </div>
+        <div class="form-example">
+            <input type="submit" value="Add new task"/>
+        </div>
+    </form>
+
+
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Items</h2>
+            <ul class="list-group mb-4">
+                {% for item in items %}
+                    <h2>{{ item.title }}</h2>
+                    <p>ID: {{ item.id }}</p>
+                    <p>Status: {{ item.status }}</p>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
 {% endblock %}

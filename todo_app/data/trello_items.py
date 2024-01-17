@@ -72,7 +72,7 @@ def get_all_lists():
     return [List(l['id'], l['name']) for l in result]
 
 
-def get_all_cards():
+def get_all_items():
     endpoint = f"boards/{os.getenv('TRELLO_BOARD_ID')}/cards"
     response = make_trello_request(endpoint, method="GET")
 
@@ -80,16 +80,16 @@ def get_all_cards():
     return [Item(item['id'], item['name'], item['idList']) for item in result]
 
 
-def add_new_card(name):
+def add_new_item(name):
     endpoint = "cards"
     params = {
-        'idList': os.getenv('TRELLO_NOT_STARTED_ID_LIST'),
+        'idList': os.getenv('TRELLO_DEFAULT_LIST_ID'),
         'name': name
     }
     return make_trello_request(endpoint, method="POST", params=params).status_code
 
 
-def delete_card(item_id):
+def delete_item(item_id):
     endpoint = f"cards/{item_id}"
     return make_trello_request(endpoint, method="DELETE").status_code
 

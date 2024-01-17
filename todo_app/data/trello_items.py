@@ -18,19 +18,11 @@ class Item:
         self.id = id
         self.name = name
         self.idList = idList
+        self.list = get_list(self.idList)
 
-def get_all_lists():
-    """
-    Fetches all lists associated with the Trello  board
 
-    Returns:
-        array: An array of lists.
-    """
-    url = url = f"https://api.trello.com/1/boards/{os.getenv('TRELLO_BOARD_ID')}/lists"
-
-    headers = {
-        "Accept": "application/json"
-    }
+def get_list(idList):
+    url = f"https://api.trello.com/1/lists/{idList}"
 
     query = {
         'key': os.getenv('TRELLO_API_KEY'),
@@ -40,12 +32,11 @@ def get_all_lists():
     response = requests.request(
         "GET",
         url,
-        headers=headers,
         params=query
     )
     result = json.loads(response.text)
-    print(result)
-    return [List(item['id'], item['name']) for item in result]
+    return List(result['id'], result['name'])
+
 
 def get_all_cards():
     url = f"https://api.trello.com/1/boards/{os.getenv('TRELLO_BOARD_ID')}/cards"
@@ -63,3 +54,42 @@ def get_all_cards():
     result = json.loads(response.text)
 
     return [Item(item['id'], item['name'], item['idList']) for item in result]
+
+
+def add_new_card(name):
+    url = "https://api.trello.com/1/cards"
+
+    headers = {
+        "Accept": "application/json"
+    }
+
+    query = {
+        'key': os.getenv('TRELLO_API_KEY'),
+        'token': os.getenv('TRELLO_API_TOKEN'),
+        'idList': os.getenv('TRELLO_NOT_STARTED_ID_LIST'),
+        'name': name
+    }
+
+    response = requests.request(
+        "POST",
+        url,
+        headers=headers,
+        params=query
+    )
+    return response.status_code
+
+
+def delete_card(item_id):
+    url = f"https://api.trello.com/1/cards/{item_id}"
+
+    query = {
+        'key': os.getenv('TRELLO_API_KEY'),
+        'token': os.getenv('TRELLO_API_TOKEN'),
+    }
+
+    response = requests.request(
+        "DELETE",
+        url,
+        params=query
+    )
+    return response.status_code

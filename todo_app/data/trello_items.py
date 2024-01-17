@@ -21,8 +21,35 @@ class Item:
         self.list = get_list(self.idList)
 
 
-def get_list(idList):
-    url = f"https://api.trello.com/1/lists/{idList}"
+def make_trello_request(endpoint, method="GET", params=None):
+    url = f"https://api.trello.com/1/{endpoint}"
+
+    headers = {
+        "Accept": "application/json"
+    }
+
+    query = {
+        'key': os.getenv('TRELLO_API_KEY'),
+        'token': os.getenv('TRELLO_API_TOKEN'),
+    }
+
+    if params:
+        query.update(params)
+
+
+    print(query)
+    print(url)
+    response = requests.request(
+        method,
+        url,
+        headers=headers,
+        params=query
+    )
+    return response
+
+
+def get_list(id_list):
+    url = f"https://api.trello.com/1/lists/{id_list}"
 
     query = {
         'key': os.getenv('TRELLO_API_KEY'),
@@ -38,58 +65,38 @@ def get_list(idList):
     return List(result['id'], result['name'])
 
 
-def get_all_cards():
-    url = f"https://api.trello.com/1/boards/{os.getenv('TRELLO_BOARD_ID')}/cards"
-
-    query = {
-        'key': os.getenv('TRELLO_API_KEY'),
-        'token': os.getenv('TRELLO_API_TOKEN')
-    }
-
-    response = requests.request(
-        "GET",
-        url,
-        params=query
-    )
+def get_all_lists():
+    endpoint = f"boards/{os.getenv('TRELLO_BOARD_ID')}/lists"
+    response = make_trello_request(endpoint, method="GET")
     result = json.loads(response.text)
+    return [List(l['id'], l['name']) for l in result]
 
+
+def get_all_cards():
+    endpoint = f"boards/{os.getenv('TRELLO_BOARD_ID')}/cards"
+    response = make_trello_request(endpoint, method="GET")
+
+    result = json.loads(response.text)
     return [Item(item['id'], item['name'], item['idList']) for item in result]
 
 
 def add_new_card(name):
-    url = "https://api.trello.com/1/cards"
-
-    headers = {
-        "Accept": "application/json"
-    }
-
-    query = {
-        'key': os.getenv('TRELLO_API_KEY'),
-        'token': os.getenv('TRELLO_API_TOKEN'),
+    endpoint = "cards"
+    params = {
         'idList': os.getenv('TRELLO_NOT_STARTED_ID_LIST'),
         'name': name
     }
-
-    response = requests.request(
-        "POST",
-        url,
-        headers=headers,
-        params=query
-    )
-    return response.status_code
+    return make_trello_request(endpoint, method="POST", params=params).status_code
 
 
 def delete_card(item_id):
-    url = f"https://api.trello.com/1/cards/{item_id}"
+    endpoint = f"cards/{item_id}"
+    return make_trello_request(endpoint, method="DELETE").status_code
 
-    query = {
-        'key': os.getenv('TRELLO_API_KEY'),
-        'token': os.getenv('TRELLO_API_TOKEN'),
+
+def move_item(item_id, list_id):
+    endpoint = f"cards/{item_id}"
+    params = {
+        'idList': list_id
     }
-
-    response = requests.request(
-        "DELETE",
-        url,
-        params=query
-    )
-    return response.status_code
+    return make_trello_request(endpoint, method="PUT", params=params).status_code

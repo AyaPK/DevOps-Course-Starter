@@ -7,37 +7,63 @@
         <p class="lead">Just another to-do app.</p>
     </div>
 
-    <form action="/item" method="post">
-        <div>
-            <label for="name">Task to add: </label>
-            <input type="text" name="name" id="name" required/>
-        </div>
-        <div class="form-example">
-            <input type="submit" value="Add new task"/>
+    <form action="/item" method="post" style="width: 37rem;">
+        <div class="row">
+            <div class="col form-group">
+                <label for="name">Task to add: </label>
+                <input type="text" name="name" id="name" required/>
+            </div>
+            <div class="col">
+                <input type="submit" value="Add new task"/>
+            </div>
         </div>
     </form>
 
+    {% for l in lists %}
+        {{ l.name }}
+    {% endfor %}
 
-    <div class="row">
-        <div class="col-md-12">
-            <h2>Tasks</h2>
-            <ul class="list-group mb-4">
-                {% for item in items %}
-                    <div class="card text-white bg-info mb-2" style="width: 22rem;">
-                        <h5 class="card-header font-weight-bold">
-                            {{ item.list.name }}
-                        </h5>
-                        <div class="card-body">
-                            <h2 class="card-title">{{ item.name }}</h2>
-                            <p class="card-text">ID: {{ item.id }}</p>
-                            <form action="/delete_item" method="post" id="delete-{{ item.id }}">
+    <h2>Tasks</h2>
+
+    <div class="row row-cols-1 row-cols-md-3">
+        {% for item in items %}
+            <div class="col mb-2">
+                <div class="card text-white bg-info h-100">
+                    <h5 class="card-header font-weight-bold">
+                        {{ item.list.name }}
+                    </h5>
+                    <div class="card-body d-flex flex-column">
+                        <h3 class="card-title">{{ item.name }}</h3>
+                        <p class="card-text">ID: {{ item.id }}</p>
+                        <div class="row">
+
+                            <form class="mt-auto" action="/delete_item" method="post" id="delete-{{ item.id }}">
                                 <input type="hidden" name="item-id" value="{{ item.id }}">
-                                <button class="btn btn-danger mt-3" type="submit" form="delete-{{ item.id }}" value="Submit"><i class="fa-solid fa-trash"></i> Delete task</button>
+                                <button class="btn btn-danger" type="submit" form="delete-{{ item.id }}"
+                                        value="Submit"><i class="fa-solid fa-trash"></i> Delete task
+                                </button>
                             </form>
+
+                            <div class="col">
+                                <form class="mt-auto" action="/move_item" method="post" id="move-{{ item.id }}">
+                                    <input type="hidden" name="item-id" value="{{ item.id }}">
+                                    <select class="form-select w-100" aria-label="Default select example"
+                                            name="list-id">
+                                        {% for l in lists %}
+                                            <option {{ "selected" if l.id == item.list.id }}
+                                                    value="{{ l.id }}">{{ l.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button class="btn btn-primary w-100" type="submit" form="move-{{ item.id }}"
+                                            value="Submit"><i class="fa-solid fa-trash"></i> Update task
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
-                {% endfor %}
-            </ul>
-        </div>
+                </div>
+            </div>
+        {% endfor %}
     </div>
+
 {% endblock %}

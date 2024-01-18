@@ -22,6 +22,17 @@ class Item:
 
 
 def make_trello_request(endpoint, method="GET", params=None):
+    """
+    Method to make a Trello request
+
+    Args:
+        endpoint: The endpoint you would like to request
+        method: The type of request, e.g. "GET", "PUT", "POST"
+        params: A dict containing any additional parameters for the request
+
+    Returns:
+        A response object
+    """
     url = f"https://api.trello.com/1/{endpoint}"
 
     headers = {
@@ -36,9 +47,6 @@ def make_trello_request(endpoint, method="GET", params=None):
     if params:
         query.update(params)
 
-
-    print(query)
-    print(url)
     response = requests.request(
         method,
         url,
@@ -49,6 +57,15 @@ def make_trello_request(endpoint, method="GET", params=None):
 
 
 def get_list(id_list):
+    """
+    Fetches the details of a single list
+
+    Args:
+        id_list: The ID of the list you would like to fetch
+
+    Returns:
+        A List object
+    """
     url = f"https://api.trello.com/1/lists/{id_list}"
 
     query = {
@@ -66,6 +83,12 @@ def get_list(id_list):
 
 
 def get_all_lists():
+    """
+    Fetches all lists on the board
+
+    Returns:
+        An array of List objects
+    """
     endpoint = f"boards/{os.getenv('TRELLO_BOARD_ID')}/lists"
     response = make_trello_request(endpoint, method="GET")
     result = json.loads(response.text)
@@ -73,6 +96,12 @@ def get_all_lists():
 
 
 def get_all_items():
+    """
+    Fetches all cards on the board
+
+    Returns:
+        An array of Item objects
+    """
     endpoint = f"boards/{os.getenv('TRELLO_BOARD_ID')}/cards"
     response = make_trello_request(endpoint, method="GET")
 
@@ -81,6 +110,15 @@ def get_all_items():
 
 
 def add_new_item(name):
+    """
+    Adds a new item to the 'not-started' list
+
+    Args:
+        name: The name of the item
+
+    Returns:
+        The status code of the request as an integer
+    """
     endpoint = "cards"
     params = {
         'idList': os.getenv('TRELLO_DEFAULT_LIST_ID'),
@@ -90,11 +128,30 @@ def add_new_item(name):
 
 
 def delete_item(item_id):
+    """
+    Deletes an item from the board
+
+    Args:
+        item_id: The ID of the item to be deleted
+
+    Returns:
+        The status code of the request as an integer
+    """
     endpoint = f"cards/{item_id}"
     return make_trello_request(endpoint, method="DELETE").status_code
 
 
 def move_item(item_id, list_id):
+    """
+    Moves an item to a different list, changing its status
+
+    Args:
+        item_id: The ID of the item you'd like to move
+        list_id: The ID of the target list
+
+    Returns:
+        The status code of the request as an integer
+    """
     endpoint = f"cards/{item_id}"
     params = {
         'idList': list_id

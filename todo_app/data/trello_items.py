@@ -71,18 +71,8 @@ def get_list(id_list):
     Returns:
         A List object
     """
-    url = f"https://api.trello.com/1/lists/{id_list}"
-
-    query = {
-        'key': os.getenv('TRELLO_API_KEY'),
-        'token': os.getenv('TRELLO_API_TOKEN')
-    }
-
-    response = requests.request(
-        "GET",
-        url,
-        params=query
-    )
+    endpoint = f"lists/{id_list}"
+    response = make_trello_request(endpoint, method="GET")
     result = json.loads(response.text)
     return List.from_trello_response(result)
 
@@ -109,9 +99,7 @@ def get_all_items():
     """
     endpoint = f"boards/{os.getenv('TRELLO_BOARD_ID')}/cards"
     response = make_trello_request(endpoint, method="GET")
-
     result = json.loads(response.text)
-
     return [Item.from_trello_response(item) for item in result]
 
 

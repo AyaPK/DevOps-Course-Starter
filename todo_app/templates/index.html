@@ -19,10 +19,6 @@
         </div>
     </form>
 
-    {% for l in lists %}
-        {{ l.name }}
-    {% endfor %}
-
     <h2>Tasks</h2>
 
     <div class="row row-cols-1 row-cols-md-3">
@@ -34,7 +30,6 @@
                     </h5>
                     <div class="card-body d-flex flex-column">
                         <h3 class="card-title">{{ item.name }}</h3>
-                        <p class="card-text">ID: {{ item.id }}</p>
                         <div class="row">
 
                             <form class="mt-auto" action="/delete_item" method="post" id="delete-{{ item.id }}">
@@ -60,6 +55,9 @@
                                 </form>
                             </div>
                         </div>
+                    </div>
+                    <div class="card-footer">
+                        <p class="card-text">ID: {{ item.id }}</p>
                     </div>
                 </div>
             </div>

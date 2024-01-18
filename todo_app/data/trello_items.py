@@ -9,8 +9,9 @@ class List:
         self.id = id
         self.name = name
 
-    def __str__(self):
-        return f"{self.name} ({self.id})"
+    @classmethod
+    def from_trello_response(cls, response):
+        return cls(response['id'], response['name'])
 
 
 class Item:
@@ -19,6 +20,10 @@ class Item:
         self.name = name
         self.idList = idList
         self.list = get_list(self.idList)
+
+    @classmethod
+    def from_trello_response(cls, response):
+        return cls(response['id'], response['name'], response['idList'])
 
 
 def make_trello_request(endpoint, method="GET", params=None):
@@ -79,7 +84,7 @@ def get_list(id_list):
         params=query
     )
     result = json.loads(response.text)
-    return List(result['id'], result['name'])
+    return List.from_trello_response(result)
 
 
 def get_all_lists():
@@ -92,7 +97,7 @@ def get_all_lists():
     endpoint = f"boards/{os.getenv('TRELLO_BOARD_ID')}/lists"
     response = make_trello_request(endpoint, method="GET")
     result = json.loads(response.text)
-    return [List(l['id'], l['name']) for l in result]
+    return [List.from_trello_response(lst) for lst in result]
 
 
 def get_all_items():
@@ -106,7 +111,8 @@ def get_all_items():
     response = make_trello_request(endpoint, method="GET")
 
     result = json.loads(response.text)
-    return [Item(item['id'], item['name'], item['idList']) for item in result]
+
+    return [Item.from_trello_response(item) for item in result]
 
 
 def add_new_item(name):

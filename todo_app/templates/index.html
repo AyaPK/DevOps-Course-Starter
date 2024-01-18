@@ -47,7 +47,7 @@
                             <div class="col">
                                 <form class="mt-auto" action="/move_item" method="post" id="move-{{ item.id }}">
                                     <input type="hidden" name="item-id" value="{{ item.id }}">
-                                    <select class="form-select w-100" aria-label="Default select example"
+                                    <select class="form-select form-select-lg w-100" aria-label="Default select example"
                                             name="list-id">
                                         {% for l in lists %}
                                             <option {{ "selected" if l.id == item.list.id }}

@@ -15,15 +15,16 @@ class List:
 
 
 class Item:
-    def __init__(self, id, name, idList):
+    def __init__(self, id, name, desc, id_list):
         self.id = id
         self.name = name
-        self.idList = idList
-        self.list = get_list(self.idList)
+        self.desc = desc
+        self.id_list = id_list
+        self.list = get_list(self.id_list)
 
     @classmethod
     def from_trello_response(cls, response):
-        return cls(response['id'], response['name'], response['idList'])
+        return cls(response['id'], response['name'], response['desc'], response['idList'])
 
 
 def make_trello_request(endpoint, method="GET", params=None):
@@ -103,12 +104,13 @@ def get_all_items():
     return [Item.from_trello_response(item) for item in result]
 
 
-def add_new_item(name):
+def add_new_item(name, desc):
     """
     Adds a new item to the 'not-started' list
 
     Args:
         name: The name of the item
+        desc: The description of the item
 
     Returns:
         The status code of the request as an integer
@@ -116,7 +118,8 @@ def add_new_item(name):
     endpoint = "cards"
     params = {
         'idList': os.getenv('TRELLO_DEFAULT_LIST_ID'),
-        'name': name
+        'name': name,
+        'desc': desc
     }
     return make_trello_request(endpoint, method="POST", params=params).status_code
 

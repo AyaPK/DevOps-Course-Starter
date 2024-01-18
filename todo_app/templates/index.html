@@ -7,21 +7,34 @@
         <p class="lead">Just another to-do app.</p>
     </div>
 
-    <form action="/item" method="post" style="width: 60rem;">
+    <form action="/item" method="post">
         <div class="row">
             <div class="col form-group">
                 <label for="name">Task to add: </label>
-                <input type="text" name="name" id="name" required/>
+                <input type="text" name="name" id="name" placeholder="Name of the item" required/>
             </div>
             <div class="col form-group">
-                <input type="text", name="desc", id="desc", placeholder="Details of the item"required>
+                <label for="desc">Description:</label>
+                <input type="text" name="desc" id="desc" placeholder="Details of the item" required>
+            </div>
+            <div class="col form-group">
+                <label for="due">Due date: (optional)</label>
+                <br>
+                <input type="date" id="due" name="due-date"/>
             </div>
 
             <div class="col">
-                <input type="submit" value="Add new task"/>
+                <input class="btn btn-success" type="submit" value="Add new task"/>
             </div>
         </div>
     </form>
+
+
+    <script>
+        $(function () {
+            $("#datepicker").datepicker();
+        });
+    </script>
 
     <h2>Tasks</h2>
     {% for lst in lists %}
@@ -31,7 +44,7 @@
                 {% for item in items %}
                     {% if item.list.id == lst.id %}
                         <div class="col mb-2">
-                            <div class="card text-white bg-info h-100">
+                            <div class="card text-white {{ "bg-danger" if item.overdue() else "bg-info" }} h-100">
                                 <h5 class="card-header font-weight-bold">
                                     {{ item.name }}
                                 </h5>
@@ -39,6 +52,10 @@
                                     <div class="row">
                                         {{ item.desc }}
                                     </div>
+                                    <div class="row">
+                                        {{ "Due by: {0}".format(item.due) if item.due }}
+                                    </div>
+                                    <hr>
                                     <div class="row">
                                         <form class="mt-auto" action="/delete_item" method="post"
                                               id="delete-{{ item.id }}">

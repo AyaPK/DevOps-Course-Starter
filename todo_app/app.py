@@ -14,7 +14,7 @@ def index():
 
 @app.route('/item', methods=['POST'])
 def add_created_item():
-    if add_new_item(request.form.get('name'), request.form.get('desc')) == 200:
+    if add_new_item(request.form.get('name'), request.form.get('desc'), request.form.get('due-date')) == 200:
         return redirect('/')
     else:
         # Handle the error

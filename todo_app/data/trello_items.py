@@ -1,3 +1,5 @@
+from datetime import datetime, date
+
 from flask import session
 import requests
 import json
@@ -15,16 +17,24 @@ class List:
 
 
 class Item:
-    def __init__(self, id, name, desc, id_list):
+    def __init__(self, id, name, desc, id_list, due=None):
         self.id = id
         self.name = name
         self.desc = desc
         self.id_list = id_list
         self.list = get_list(self.id_list)
 
+        if due:
+            self.due = datetime.strptime(due, "%Y-%m-%dT%H:%M:%S.%fZ").date()
+        else:
+            self.due = None
+
+    def overdue(self):
+        return date.today() > self.due if self.due else False
+
     @classmethod
     def from_trello_response(cls, response):
-        return cls(response['id'], response['name'], response['desc'], response['idList'])
+        return cls(response['id'], response['name'], response['desc'], response['idList'], response['due'])
 
 
 def make_trello_request(endpoint, method="GET", params=None):
@@ -104,7 +114,7 @@ def get_all_items():
     return [Item.from_trello_response(item) for item in result]
 
 
-def add_new_item(name, desc):
+def add_new_item(name, desc, due):
     """
     Adds a new item to the 'not-started' list
 
@@ -119,7 +129,8 @@ def add_new_item(name, desc):
     params = {
         'idList': os.getenv('TRELLO_DEFAULT_LIST_ID'),
         'name': name,
-        'desc': desc
+        'desc': desc,
+        'due': due
     }
     return make_trello_request(endpoint, method="POST", params=params).status_code
 

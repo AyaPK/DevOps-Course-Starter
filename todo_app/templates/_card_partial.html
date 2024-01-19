@@ -1,0 +1,47 @@
+<div class="col mb-2">
+    <div class="card text-white {{ "bg-danger" if item.overdue() else "bg-info" }} h-100">
+        <h5 class="card-header font-weight-bold">
+            {{ item.name }}
+        </h5>
+        <div class="card-body d-flex flex-column">
+            <div class="row">
+                {{ item.desc }}
+            </div>
+            <div class="row">
+                {{ "Due by: {0}".format(item.due) if item.due }}
+            </div>
+            <hr>
+            <div class="row">
+                <form class="mt-auto" action="/delete_item" method="post"
+                      id="delete-{{ item.id }}">
+                    <input type="hidden" name="item-id" value="{{ item.id }}">
+                    <button class="btn btn-danger" type="submit" form="delete-{{ item.id }}"
+                            value="Submit"><i class="fa-solid fa-trash"></i> Delete task
+                    </button>
+                </form>
+
+                <div class="col">
+                    <form class="mt-auto" action="/move_item" method="post"
+                          id="move-{{ item.id }}">
+                        <input type="hidden" name="item-id" value="{{ item.id }}">
+                        <select class="form-select form-select-lg"
+                                aria-label="Default select example"
+                                name="list-id">
+                            {% for l in lists %}
+                                <option {{ "selected" if l.id == item.list.id }}
+                                        value="{{ l.id }}">{{ l.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <button class="btn btn-primary w-100" type="submit"
+                                form="move-{{ item.id }}"
+                                value="Submit"><i class="fa-solid fa-trash"></i> Update task
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <p class="card-text">ID: {{ item.id }}</p>
+        </div>
+    </div>
+</div>

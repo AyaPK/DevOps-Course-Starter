@@ -38,6 +38,16 @@ $ cp .env.template .env  # (first time only)
 
 The `.env` file is used by flask to set environment variables when running `flask run`. This enables things like development mode (which also enables features like hot reloading when you make a file change). There's also a [SECRET_KEY](https://flask.palletsprojects.com/en/2.3.x/config/#SECRET_KEY) variable which is used to encrypt the flask session cookie.
 
+## Adding environment variables
+
+The app communicates with the Trello API to function, and so you will need to add some details to the .env file in order for it to work.
+
+Create a Trello power-up to get an API key and Token, these can be easily obtained by following the [Trello API docs](https://developer.atlassian.com/cloud/trello/guides/rest-api/api-introduction/#managing-your-api-key).
+
+Once you have your API Key and Token, and them to your environment variables under `TRELLO_API_KEY` and `TRELLO_API_TOKEN`
+
+Finally, you will need to make a Trello Board with at least one List. Once you have created them, add the ID for both the Board and the List to the environment variables under `TRELLO_BOARD_ID` and `TRELLO_DEFAULT_LIST_ID`.
+(As the name suggests, this list is the default location for newly made items).
 ## Running the App
 
 Once the all dependencies have been installed, start the Flask app in development mode within the Poetry environment by running:

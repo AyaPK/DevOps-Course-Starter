@@ -7,27 +7,38 @@
         <p class="lead">Just another to-do app.</p>
     </div>
 
+
     <form action="/item" method="post">
-        <div>
-            <label for="name">Task to add: </label>
-            <input type="text" name="name" id="name" required/>
-        </div>
-        <div class="form-example">
-            <input type="submit" value="Add new task"/>
+        <div class="row">
+            <div class="col form-group">
+                <label for="name">Task to add: </label>
+                <input type="text" name="name" id="name" placeholder="Name of the item" required/>
+            </div>
+            <div class="col form-group">
+                <label for="desc">Description:</label>
+                <input type="text" name="desc" id="desc" placeholder="Details of the item" required>
+            </div>
+            <div class="col form-group">
+                <label for="due">Due date: (optional)</label>
+                <br>
+                <input type="date" id="due" name="due-date"/>
+            </div>
+
+            <div class="col">
+                <input class="btn btn-success" type="submit" value="Add new task"/>
+            </div>
         </div>
     </form>
 
-
-    <div class="row">
-        <div class="col-md-12">
-            <h2>Items</h2>
-            <ul class="list-group mb-4">
-                {% for item in items %}
-                    <h2>{{ item.title }}</h2>
-                    <p>ID: {{ item.id }}</p>
-                    <p>Status: {{ item.status }}</p>
+    <h2>Tasks</h2>
+    {% for lst in lists %}
+        <div class="container rounded mb-3" style="border:1px solid #cecece;">
+            <h3>{{ lst.name }}</h3>
+            <div class="row row-cols-1 row-cols-md-3">
+                {% for item in lst.items %}
+                    {% include "_card_partial.html" %}
                 {% endfor %}
-            </ul>
+            </div>
         </div>
-    </div>
+    {% endfor %}
 {% endblock %}

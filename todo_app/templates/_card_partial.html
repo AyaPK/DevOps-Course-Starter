@@ -8,7 +8,7 @@
                 {{ item.desc }}
             </div>
             <div class="row">
-                {{ "Due by: {0}".format(item.due) if item.due }}
+                {{ item.due_by_text() }}
             </div>
             <hr>
             <div class="row">

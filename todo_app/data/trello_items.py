@@ -33,6 +33,9 @@ class Item:
     def overdue(self):
         return date.today() > self.due if self.due else False
 
+    def due_by_text(self):
+        return f"Due by: {self.due}" if self.due else "No due date"
+
     @classmethod
     def from_trello_response(cls, response):
         return cls(response['id'], response['name'], response['desc'], response['due'])

@@ -28,7 +28,7 @@
                                 aria-label="Default select example"
                                 name="list-id">
                             {% for l in lists %}
-                                <option {{ "selected" if l.id == item.list.id }}
+                                <option {{ "selected" if l == lst }}
                                         value="{{ l.id }}">{{ l.name }}</option>
                             {% endfor %}
                         </select>

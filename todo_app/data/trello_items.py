@@ -7,22 +7,23 @@ import os
 
 
 class List:
-    def __init__(self, id, name):
+    def __init__(self, id, name, items):
         self.id = id
         self.name = name
+        self.items = []
+        for item in items:
+            self.items.append(Item.from_trello_response(item))
 
     @classmethod
     def from_trello_response(cls, response):
-        return cls(response['id'], response['name'])
+        return cls(response['id'], response['name'], response['cards'])
 
 
 class Item:
-    def __init__(self, id, name, desc, id_list, due=None):
+    def __init__(self, id, name, desc, due=None):
         self.id = id
         self.name = name
         self.desc = desc
-        self.id_list = id_list
-        self.list = get_list(self.id_list)
 
         if due:
             self.due = datetime.strptime(due, "%Y-%m-%dT%H:%M:%S.%fZ").date()
@@ -34,7 +35,7 @@ class Item:
 
     @classmethod
     def from_trello_response(cls, response):
-        return cls(response['id'], response['name'], response['desc'], response['idList'], response['due'])
+        return cls(response['id'], response['name'], response['desc'], response['due'])
 
 
 def make_trello_request(endpoint, method="GET", params=None):
@@ -72,46 +73,21 @@ def make_trello_request(endpoint, method="GET", params=None):
     return response
 
 
-def get_list(id_list):
+def get_all_lists_and_items():
     """
-    Fetches the details of a single list
-
-    Args:
-        id_list: The ID of the list you would like to fetch
-
-    Returns:
-        A List object
-    """
-    endpoint = f"lists/{id_list}"
-    response = make_trello_request(endpoint, method="GET")
-    result = json.loads(response.text)
-    return List.from_trello_response(result)
-
-
-def get_all_lists():
-    """
-    Fetches all lists on the board
+    Gets all lists on the trello boards, as well as the items associated with them
 
     Returns:
         An array of List objects
     """
     endpoint = f"boards/{os.getenv('TRELLO_BOARD_ID')}/lists"
-    response = make_trello_request(endpoint, method="GET")
+    params = {
+        'cards': "open"
+    }
+    response = make_trello_request(endpoint, params=params, method="GET")
     result = json.loads(response.text)
-    return [List.from_trello_response(lst) for lst in result]
-
-
-def get_all_items():
-    """
-    Fetches all cards on the board
-
-    Returns:
-        An array of Item objects
-    """
-    endpoint = f"boards/{os.getenv('TRELLO_BOARD_ID')}/cards"
-    response = make_trello_request(endpoint, method="GET")
-    result = json.loads(response.text)
-    return [Item.from_trello_response(item) for item in result]
+    lists = [List.from_trello_response(lst) for lst in result]
+    return lists
 
 
 def add_new_item(name, desc, due):

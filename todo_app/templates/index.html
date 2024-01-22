@@ -35,10 +35,8 @@
         <div class="container rounded mb-3" style="border:1px solid #cecece;">
             <h3>{{ lst.name }}</h3>
             <div class="row row-cols-1 row-cols-md-3">
-                {% for item in items %}
-                    {% if item.list.id == lst.id %}
-                        {% include "_card_partial.html" %}
-                    {% endif %}
+                {% for item in lst.items %}
+                    {% include "_card_partial.html" %}
                 {% endfor %}
             </div>
         </div>

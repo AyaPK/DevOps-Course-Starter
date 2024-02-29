@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect
 from todo_app.flask_config import Config
 from todo_app.data.trello_items import add_new_item, delete_item, move_item, get_all_lists_and_items
+from todo_app.viewmodels import IndexViewModel
 
 app = Flask(__name__)
 app.config.from_object(Config())
@@ -8,7 +9,7 @@ app.config.from_object(Config())
 
 @app.route('/')
 def index():
-    return render_template('index.html', lists=get_all_lists_and_items())
+    return render_template('index.html', view_model=(IndexViewModel(get_all_lists_and_items())))
 
 
 @app.route('/item', methods=['POST'])

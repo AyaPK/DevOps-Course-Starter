@@ -27,7 +27,7 @@
                         <select class="form-select form-select-lg"
                                 aria-label="Default select example"
                                 name="list-id">
-                            {% for l in lists %}
+                            {% for l in view_model.lists %}
                                 <option {{ "selected" if l == lst }}
                                         value="{{ l.id }}">{{ l.name }}</option>
                             {% endfor %}

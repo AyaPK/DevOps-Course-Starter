@@ -31,7 +31,7 @@
     </form>
 
     <h2>Tasks</h2>
-    {% for lst in lists %}
+    {% for lst in view_model.lists %}
         <div class="container rounded mb-3" style="border:1px solid #cecece;">
             <h3>{{ lst.name }}</h3>
             <div class="row row-cols-1 row-cols-md-3">

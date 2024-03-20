@@ -25,7 +25,7 @@
                           id="move-{{ item.id }}">
                         <input type="hidden" name="item-id" value="{{ item.id }}">
                         <select class="form-select form-select-lg"
-                                aria-label="Default select example"
+                                aria-label="List selection dropdown"
                                 name="list-id">
                             {% for l in view_model.lists %}
                                 <option {{ "selected" if l == lst }}

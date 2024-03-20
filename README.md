@@ -48,6 +48,13 @@ Once you have your API Key and Token, and them to your environment variables und
 
 Finally, you will need to make a Trello Board with at least one List. Once you have created them, add the ID for both the Board and the List to the environment variables under `TRELLO_BOARD_ID` and `TRELLO_DEFAULT_LIST_ID`.
 (As the name suggests, this list is the default location for newly made items).
+
+## Setting up Trello
+
+Your Trello board is expected to have at least three lists, named `To Do`, `Doing`, and `Done`, where the `To Do` list is used to populate the above `TRELLO_DEFAULT_LIST_ID`.
+
+Further columns may be added, and can/should work, but are not officially supported.
+
 ## Running the App
 
 Once the all dependencies have been installed, start the Flask app in development mode within the Poetry environment by running:

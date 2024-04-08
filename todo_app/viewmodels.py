@@ -11,15 +11,13 @@ class IndexViewModel:
 
     @property
     def to_do_items(self):
-        # return self.get_items_with_status("To Do")
-        return []
+        return self.get_items_with_status("To Do")
 
     @property
     def doing(self):
-        # return self.get_items_with_status("Doing")
-        return []
+        return self.get_items_with_status("Doing")
 
     @property
     def done_items(self):
-        # return self.get_items_with_status("Done")
-        return []
+        return self.get_items_with_status("Done")
+

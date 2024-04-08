@@ -74,3 +74,21 @@ Press CTRL+C to quit
  * Debugger PIN: 113-666-066
 ```
 Now visit [`http://localhost:5000/`](http://localhost:5000/) in your web browser to view the app.
+
+## Running Tests
+
+To run the full test suite, execute the `pytest` command from the project root.
+
+You can run an individual set of tests by passing the test directory as an argument. E.g.
+```bash
+$ pytest todo_app\test_client.py 
+```
+or
+```bash
+$ pytest todo_app\test_viewmodel.py 
+```
+
+Additionally, you can run a single test with the `<test_directory>::<test_name>` argmuent. E.g.
+```bash
+$ pytest todo_app\test_viewmodel.py::test_viewmodel_todo_property
+```

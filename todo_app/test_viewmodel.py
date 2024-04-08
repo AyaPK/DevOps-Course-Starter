@@ -3,9 +3,9 @@ from todo_app.data.trello_items import Item, List
 
 test_items = [
     {"id": 1, "name": "Task 1", "desc": "The first task", "due": ""},
-    {"id": 1, "name": "Task 1", "desc": "The first task", "due": ""},
-    {"id": 1, "name": "Task 1", "desc": "The first task", "due": ""},
-    {"id": 1, "name": "Task 1", "desc": "The first task", "due": ""}
+    {"id": 2, "name": "Task 2", "desc": "The second task", "due": ""},
+    {"id": 3, "name": "Task 3", "desc": "The third task", "due": ""},
+    {"id": 4, "name": "Task 4", "desc": "The fourth task", "due": ""}
 ]
 
 

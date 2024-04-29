@@ -79,8 +79,8 @@ def select_card(driver, card_name):
 @pytest.fixture(scope="module")
 def driver():
     driver_options = Options()
-    # driver_options.add_argument("--headless")
-    # driver_options.add_argument("--disable-gpu")
+    driver_options.add_argument("--headless")
+    driver_options.add_argument("--disable-gpu")
 
     with webdriver.Chrome(options=driver_options) as driver:
         yield driver

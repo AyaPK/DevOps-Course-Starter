@@ -76,19 +76,20 @@ Press CTRL+C to quit
 Now visit [`http://localhost:5000/`](http://localhost:5000/) in your web browser to view the app.
 
 ## Running Tests
+Selenium tests run using a Chrome headless browser. Chrome may need to be installed on your system for these tests to work.
 
 To run the full test suite, execute the `pytest` command from the project root.
 
 You can run an individual set of tests by passing the test directory as an argument. E.g.
 ```bash
-$ pytest todo_app\test_client.py 
+$ pytest todo_app\tests
 ```
 or
 ```bash
-$ pytest todo_app\test_viewmodel.py 
+$ pytest todo_app\tests\tests_e2e.py 
 ```
 
-Additionally, you can run a single test with the `<test_directory>::<test_name>` argmuent. E.g.
+Additionally, you can run a single test with the `<test_directory>::<test_name>` argument. E.g.
 ```bash
-$ pytest todo_app\test_viewmodel.py::test_viewmodel_todo_property
+$ pytest todo_app\tests\test_viewmodel.py::test_viewmodel_todo_property
 ```

@@ -86,7 +86,7 @@ $ pytest todo_app\tests
 ```
 or
 ```bash
-$ pytest todo_app\tests\tests_e2e.py 
+$ pytest todo_app\tests_e2e\test_trello.py 
 ```
 
 Additionally, you can run a single test with the `<test_directory>::<test_name>` argument. E.g.

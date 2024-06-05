@@ -25,20 +25,36 @@
             </div>
 
             <div class="col">
-                <input class="btn btn-success" type="submit" value="Add new task"/>
+                <input id="add-task-btn" class="btn btn-success" type="submit" value="Add new task"/>
             </div>
         </div>
     </form>
 
     <h2>Tasks</h2>
-    {% for lst in lists %}
-        <div class="container rounded mb-3" style="border:1px solid #cecece;">
-            <h3>{{ lst.name }}</h3>
-            <div class="row row-cols-1 row-cols-md-3">
-                {% for item in lst.items %}
-                    {% include "_card_partial.html" %}
-                {% endfor %}
-            </div>
+    <div class="container rounded mb-3" style="border:1px solid #cecece;">
+        <h3>To Do Items</h3>
+        <div id="to-do-tasks" class="row row-cols-1 row-cols-md-3">
+            {% for item in view_model.to_do_items %}
+                {% include "_card_partial.html" %}
+            {% endfor %}
         </div>
-    {% endfor %}
+    </div>
+
+    <div class="container rounded mb-3" style="border:1px solid #cecece;">
+        <h3>Items In Progress</h3>
+        <div id="doing-tasks" class="row row-cols-1 row-cols-md-3">
+            {% for item in view_model.doing %}
+                {% include "_card_partial.html" %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="container rounded mb-3" style="border:1px solid #cecece;">
+        <h3>Completed Items</h3>
+        <div id="done-tasks" class="row row-cols-1 row-cols-md-3">
+            {% for item in view_model.done_items %}
+                {% include "_card_partial.html" %}
+            {% endfor %}
+        </div>
+    </div>
 {% endblock %}

@@ -1,0 +1,4 @@
+all:
+  hosts:
+    managed_node:
+      ansible_host: 18.132.164.244

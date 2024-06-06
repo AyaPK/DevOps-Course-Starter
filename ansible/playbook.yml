@@ -1,0 +1,5 @@
+---
+- name: Install To-Do App on new web server
+  hosts: managed_node
+  remote_user: ec2-user
+  tasks: []

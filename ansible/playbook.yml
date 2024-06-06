@@ -25,19 +25,40 @@
         name: python3-pip
         state: present
 
-    - name: Install Poetry
-      shell: > 
-        curl -sSL https://install.python-poetry.org | python3 -
+    - name: Create todoapp user
+      user:
+        name: todoapp
+        state: present
+        shell: /bin/bash
+
+    - name: Set POETRY_HOME environment variable for todoapp user
+      shell: echo "export POETRY_HOME=/home/todoapp/.local" >> /home/todoapp/.bashrc
       args:
-        creates: /home/ec2-user/.local/bin/poetry
+        creates: /home/todoapp/.local
+
+    - name: Install Poetry for todoapp user
+      shell: >
+        curl -sSL https://install.python-poetry.org | POETRY_HOME=/home/todoapp/.local python3 -
+      args:
+        creates: /home/todoapp/.local/bin/poetry
       become: yes
+      become_user: todoapp
 
     - name: Create /opt/todoapp directory
       file:
         path: /opt/todoapp
         state: directory
         mode: '0755'
-        owner: ec2-user
+      become: yes
+      become_user: ec2-user
+
+    - name: Ensure ownership and permissions of /opt/todoapp directory and its contents
+      file:
+        path: /opt/todoapp
+        owner: todoapp
+        recurse: yes
+        state: directory
+        mode: '0755'
 
     - name: Checkout latest version of To-Do App code
       git:
@@ -46,12 +67,16 @@
         version: exercise-4
         update: yes
         force: yes
+      become: yes
+      become_user: todoapp
 
     - name: Install project dependencies
-      shell: > 
-        /home/ec2-user/.local/share/pypoetry/venv/bin/poetry install
+      shell: >
+        /home/todoapp/.local/bin/poetry install
       args:
         chdir: "/opt/todoapp"
+      become: yes
+      become_user: todoapp
 
     - name: Create env file
       template:

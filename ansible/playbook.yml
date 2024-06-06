@@ -3,6 +3,15 @@
   remote_user: ec2-user
   become: yes
 
+  vars_prompt:
+    - name: trello_api_key
+      prompt: "Trello API Key: > "
+      private: yes
+
+    - name: trello_api_token
+      prompt: "Trello API Token: > "
+      private: yes
+
   tasks:
     - name: Install Git & Python
       yum:
@@ -42,3 +51,8 @@
         /home/ec2-user/.local/bin/poetry install
       args:
         chdir: "/opt/todoapp"
+
+    - name: Create env file
+      template:
+        src: .env.j2
+        dest: /opt/todoapp/.env

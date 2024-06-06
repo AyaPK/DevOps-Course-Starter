@@ -56,3 +56,14 @@
       template:
         src: .env.j2
         dest: /opt/todoapp/.env
+
+    - name: Copy todoapp.service
+      copy:
+        src: todoapp.service
+        dest: /etc/systemd/system/todoapp.service
+
+    - name: Manage systemd service for todoapp
+      systemd:
+        name: todoapp
+        daemon_reload: yes
+        state: restarted

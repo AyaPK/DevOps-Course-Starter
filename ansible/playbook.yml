@@ -1,5 +1,44 @@
----
-- name: Install To-Do App on new web server
+- name: setup servers
   hosts: managed_node
   remote_user: ec2-user
-  tasks: []
+  become: yes
+
+  tasks:
+    - name: Install Git & Python
+      yum:
+        name:
+          - git
+          - python3
+        state: present
+
+    - name: Install pip for Python 3
+      yum:
+        name: python3-pip
+        state: present
+
+    - name: Install Poetry
+      shell: > 
+        curl -sSL https://install.python-poetry.org | python3 -
+      args:
+        creates: /home/ec2-user/.local/bin/poetry
+
+    - name: Create /opt/todoapp directory
+      file:
+        path: /opt/todoapp
+        state: directory
+        mode: '0755'
+        owner: ec2-user
+
+    - name: Checkout latest version of To-Do App code
+      git:
+        repo: https://github.com/AyaPK/DevOps-Course-Starter.git
+        dest: /opt/todoapp
+        version: exercise-4
+        update: yes
+        force: yes
+
+    - name: Install project dependencies
+      shell: > 
+        /home/ec2-user/.local/bin/poetry install
+      args:
+        chdir: "/opt/todoapp"

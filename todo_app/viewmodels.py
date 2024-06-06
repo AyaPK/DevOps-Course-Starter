@@ -20,4 +20,3 @@ class IndexViewModel:
     @property
     def done_items(self):
         return self.get_items_with_status("Done")
-

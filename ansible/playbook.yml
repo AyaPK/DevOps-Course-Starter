@@ -30,6 +30,7 @@
         curl -sSL https://install.python-poetry.org | python3 -
       args:
         creates: /home/ec2-user/.local/bin/poetry
+      become: yes
 
     - name: Create /opt/todoapp directory
       file:
@@ -48,7 +49,7 @@
 
     - name: Install project dependencies
       shell: > 
-        /home/ec2-user/.local/bin/poetry install
+        /home/ec2-user/.local/share/pypoetry/venv/bin/poetry install
       args:
         chdir: "/opt/todoapp"
 

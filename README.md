@@ -109,3 +109,13 @@ $ ansible-playbook playbook.yml -i inventory.yml
 in the directory containing the ansible files, providing the `trello_api_key` and `trello_api_token` when prompted.
 
 Visit `http://your.server.ip.address:5000` to view the deployed application.
+
+## Running in Docker
+
+Running in dev:
+1. `docker build --target development --tag todo-app:dev .`
+2. `docker run --env-file .env --publish 5000:5000 --mount type=bind,source="$(pwd)/todo_app",target=/todo_app/todo_app todo-app:dev`
+
+Running in prod:
+1. `docker build --target development --tag todo-app:prod .`
+2. `docker run --env-file .env --publish 5000:5000 todo-app:prod`

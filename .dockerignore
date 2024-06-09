@@ -1,0 +1,12 @@
+.github
+.venv/*
+.vscode/*
+.git/*
+.gitignore
+.env
+.env.*
+Dockerfile
+*.yml
+*.md
+**/__pycache__
+*.pyc

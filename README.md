@@ -113,9 +113,7 @@ Visit `http://your.server.ip.address:5000` to view the deployed application.
 ## Running in Docker
 
 Running in dev:
-1. `docker build --target development --tag todo-app:dev .`
-2. `docker run --env-file .env --publish 5000:5000 --mount type=bind,source="$(pwd)/todo_app",target=/todo_app/todo_app todo-app:dev`
+1. `docker compose up development`
 
 Running in prod:
-1. `docker build --target development --tag todo-app:prod .`
-2. `docker run --env-file .env --publish 5000:5000 todo-app:prod`
+1. `docker compose up production`

@@ -112,8 +112,14 @@ Visit `http://your.server.ip.address:5000` to view the deployed application.
 
 ## Running in Docker
 
+With Docker Desktop installed, run one of the following commands from the project root:
+
 Running in dev:
-1. `docker compose up development`
+```bash
+$ docker compose up development
+```
 
 Running in prod:
-1. `docker compose up production`
+```bash
+$ docker compose up production
+```

@@ -1,12 +1,12 @@
 .github
-.venv/*
-.vscode/*
-.git/*
+.venv/
+.vscode/
+.git/
 .gitignore
 .env
 .env.*
 Dockerfile
 *.yml
 *.md
-**/__pycache__
+**/__pycache__/
 *.pyc

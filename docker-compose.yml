@@ -17,7 +17,7 @@ services:
       - ./todo_app:/todo_app/todo_app
     environment:
       - FLASK_DEBUG=true
-    command: poetry run gunicorn -b 0.0.0.0:5000 "todo_app.app:create_app()"
+    command: poetry run flask run --host=0.0.0.0
 
   production:
     extends:

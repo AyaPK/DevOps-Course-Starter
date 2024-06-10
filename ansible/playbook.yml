@@ -1,7 +1,6 @@
 - name: setup servers
   hosts: managed_node
   remote_user: ec2-user
-  become: yes
 
   vars_prompt:
     - name: trello_api_key
@@ -19,22 +18,26 @@
           - git
           - python3
         state: present
+      become: yes
 
     - name: Install pip for Python 3
       yum:
         name: python3-pip
         state: present
+      become: yes
 
     - name: Create todoapp user
       user:
         name: todoapp
         state: present
         shell: /bin/bash
+      become: yes
 
     - name: Set POETRY_HOME environment variable for todoapp user
       shell: echo "export POETRY_HOME=/home/todoapp/.local" >> /home/todoapp/.bashrc
       args:
         creates: /home/todoapp/.local
+      become: yes
 
     - name: Install Poetry for todoapp user
       shell: >
@@ -50,7 +53,7 @@
         state: directory
         mode: '0755'
       become: yes
-      become_user: ec2-user
+      become_user: todoapp
 
     - name: Ensure ownership and permissions of /opt/todoapp directory and its contents
       file:
@@ -59,6 +62,7 @@
         recurse: yes
         state: directory
         mode: '0755'
+      become: yes
 
     - name: Checkout latest version of To-Do App code
       git:
@@ -82,14 +86,17 @@
       template:
         src: .env.j2
         dest: /opt/todoapp/.env
+      become: yes
 
     - name: Copy todoapp.service
       copy:
         src: todoapp.service
         dest: /etc/systemd/system/todoapp.service
+      become: yes
 
     - name: Manage systemd service for todoapp
       systemd:
         name: todoapp
         daemon_reload: yes
         state: restarted
+      become: yes

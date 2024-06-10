@@ -93,3 +93,19 @@ Additionally, you can run a single test with the `<test_directory>::<test_name>`
 ```bash
 $ poetry run pytest todo_app\tests\test_viewmodel.py::test_viewmodel_todo_property
 ```
+
+## Deploying the app
+
+### This app is deployed using an ansible playbook.
+
+To deploy the app, first have at least two linux hosts available, a control node and at least one host.
+
+With ansible installed on the control node, copy the contents of the ansible folder to the control node, ensuring you update `inventory.yml` to use the host's IP.
+
+Connect to the control node and run
+```bash
+$ ansible-playbook playbook.yml -i inventory.yml
+```
+in the directory containing the ansible files, providing the `trello_api_key` and `trello_api_token` when prompted.
+
+Visit `http://your.server.ip.address:5000` to view the deployed application.

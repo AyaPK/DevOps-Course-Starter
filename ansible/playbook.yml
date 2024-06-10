@@ -1,0 +1,102 @@
+- name: setup servers
+  hosts: managed_node
+  remote_user: ec2-user
+
+  vars_prompt:
+    - name: trello_api_key
+      prompt: "Trello API Key: > "
+      private: yes
+
+    - name: trello_api_token
+      prompt: "Trello API Token: > "
+      private: yes
+
+  tasks:
+    - name: Install Git & Python
+      yum:
+        name:
+          - git
+          - python3
+        state: present
+      become: yes
+
+    - name: Install pip for Python 3
+      yum:
+        name: python3-pip
+        state: present
+      become: yes
+
+    - name: Create todoapp user
+      user:
+        name: todoapp
+        state: present
+        shell: /bin/bash
+      become: yes
+
+    - name: Set POETRY_HOME environment variable for todoapp user
+      shell: echo "export POETRY_HOME=/home/todoapp/.local" >> /home/todoapp/.bashrc
+      args:
+        creates: /home/todoapp/.local
+      become: yes
+
+    - name: Install Poetry for todoapp user
+      shell: >
+        curl -sSL https://install.python-poetry.org | POETRY_HOME=/home/todoapp/.local python3 -
+      args:
+        creates: /home/todoapp/.local/bin/poetry
+      become: yes
+      become_user: todoapp
+
+    - name: Create /opt/todoapp directory
+      file:
+        path: /opt/todoapp
+        state: directory
+        mode: '0755'
+      become: yes
+      become_user: todoapp
+
+    - name: Ensure ownership and permissions of /opt/todoapp directory and its contents
+      file:
+        path: /opt/todoapp
+        owner: todoapp
+        recurse: yes
+        state: directory
+        mode: '0755'
+      become: yes
+
+    - name: Checkout latest version of To-Do App code
+      git:
+        repo: https://github.com/AyaPK/DevOps-Course-Starter.git
+        dest: /opt/todoapp
+        version: exercise-4
+        update: yes
+        force: yes
+      become: yes
+      become_user: todoapp
+
+    - name: Install project dependencies
+      shell: >
+        /home/todoapp/.local/bin/poetry install
+      args:
+        chdir: "/opt/todoapp"
+      become: yes
+      become_user: todoapp
+
+    - name: Create env file
+      template:
+        src: .env.j2
+        dest: /opt/todoapp/.env
+      become: yes
+
+    - name: Copy todoapp.service
+      copy:
+        src: todoapp.service
+        dest: /etc/systemd/system/todoapp.service
+      become: yes
+
+    - name: Manage systemd service for todoapp
+      systemd:
+        name: todoapp
+        daemon_reload: yes
+        state: restarted
+      become: yes

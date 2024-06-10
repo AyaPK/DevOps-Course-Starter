@@ -1,0 +1,11 @@
+[Unit]
+Description=My To-Do App
+
+[Service]
+User=todoapp
+WorkingDirectory=/opt/todoapp/
+EnvironmentFile=/opt/todoapp/.env
+ExecStart=/home/todoapp/.local/bin/poetry run gunicorn -b 0.0.0.0:5000 "todo_app.app:create_app()"
+
+[Install]
+WantedBy=multi-user.target

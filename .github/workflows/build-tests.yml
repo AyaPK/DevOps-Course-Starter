@@ -7,4 +7,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - run: echo Hello World
+    - run: docker build --target test -t app-tests .
+    - run: docker run --env-file .env app-tests

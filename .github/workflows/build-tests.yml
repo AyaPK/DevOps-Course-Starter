@@ -20,16 +20,16 @@ jobs:
       if: success()
       uses: slackapi/slack-github-action@v1.27.0
       with:
+        slack-channel: ${{ secrets.SLACK_CHANNEL }}
         slack-message: "Build Succeeded! :white_check_mark:"
       env:
         SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_SECRET }}
-        SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
 
     - name: Send Slack Notification on Failure
       if: failure()
       uses: slackapi/slack-github-action@v1.27.0
       with:
+        slack-channel: ${{ secrets.SLACK_CHANNEL }}
         slack-message: "Build Failed! :x:"
       env:
         SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_SECRET }}
-        SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}

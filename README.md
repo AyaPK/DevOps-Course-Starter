@@ -138,8 +138,8 @@ The ToDo App can be deployed as an Azure WebApp by following the below steps.
     $ docker build --target production -t ayastead/todoapp:todoapp .
     ```
 2) Create an Azure WebApp, ensuring your Publish option is set to Docker Container, and contains the details to the above image
-4) Ensure any enviroment variables are added to `settings` > `Environment Variables` on your Azure WebApp
-3) Wait for the Docker Image to build and spin up
+3) Ensure any enviroment variables are added to `settings` > `Environment Variables` on your Azure WebApp
+4) Wait for the Docker Image to build and spin up
 
 To manually trigger a redeployment, hit the webhook with a POST request (e.g.)
 ```bash

@@ -20,7 +20,7 @@ jobs:
       if: success()
       uses: slackapi/slack-github-action@v1.27.0
       with:
-        slack-channel: ${{ secrets.SLACK_CHANNEL }}
+        channel-id: ${{ secrets.SLACK_CHANNEL }}
         slack-message: "Build Succeeded! :white_check_mark:"
       env:
         SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_SECRET }}
@@ -29,7 +29,7 @@ jobs:
       if: failure()
       uses: slackapi/slack-github-action@v1.27.0
       with:
-        slack-channel: ${{ secrets.SLACK_CHANNEL }}
+        channel-id: ${{ secrets.SLACK_CHANNEL }}
         slack-message: "Build Failed! :x:"
       env:
         SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_SECRET }}

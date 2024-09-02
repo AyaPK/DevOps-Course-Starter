@@ -8,4 +8,4 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - run: docker build --target test -t app-tests .
-    - run: docker run --env-file .env app-tests
+    - run: docker run --env-file .env.test app-tests

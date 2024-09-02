@@ -13,6 +13,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+
+    - name: Run Snyk to check for vulnerabilities
+      uses: snyk/actions/python@master
+      with:
+        command: test
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
     - run: docker build --target test -t app-tests .
     - run: docker run -e SECRET_KEY=${{ secrets.SECRET_KEY }} -e TRELLO_API_KEY=${{ secrets.TRELLO_API_KEY }} -e TRELLO_API_TOKEN=${{ secrets.TRELLO_API_TOKEN }} -e TRELLO_BOARD_ID=${{ secrets.TRELLO_BOARD_ID }} -e TRELLO_DEFAULT_LIST_ID=${{ secrets.TRELLO_DEFAULT_LIST_ID }} app-tests
 

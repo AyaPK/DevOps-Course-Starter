@@ -15,3 +15,21 @@ jobs:
     - uses: actions/checkout@v4
     - run: docker build --target test -t app-tests .
     - run: docker run -e SECRET_KEY=${{ secrets.SECRET_KEY }} -e TRELLO_API_KEY=${{ secrets.TRELLO_API_KEY }} -e TRELLO_API_TOKEN=${{ secrets.TRELLO_API_TOKEN }} -e TRELLO_BOARD_ID=${{ secrets.TRELLO_BOARD_ID }} -e TRELLO_DEFAULT_LIST_ID=${{ secrets.TRELLO_DEFAULT_LIST_ID }} app-tests
+
+    - name: Send Slack Notification on Success
+      if: success()
+      uses: slackapi/slack-github-action@v1.27.0
+      with:
+        slack-message: "Build Succeeded! :white_check_mark:"
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_SECRET }}
+        SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
+
+    - name: Send Slack Notification on Failure
+      if: failure()
+      uses: slackapi/slack-github-action@v1.27.0
+      with:
+        slack-message: "Build Failed! :x:"
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_SECRET }}
+        SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}

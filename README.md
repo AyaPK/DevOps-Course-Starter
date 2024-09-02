@@ -123,3 +123,8 @@ Running in prod:
 ```bash
 $ docker compose up production
 ```
+
+You may also run the test suite within Docker:
+```bash
+$ docker compose up test
+```

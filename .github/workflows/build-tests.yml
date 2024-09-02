@@ -8,4 +8,4 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - run: docker build --target test -t app-tests .
-    - run: docker run --env-file .env.test app-tests
+    - run: docker run -e SECRET_KEY=$SECRET_KEY TRELLO_API_KEY=$TRELLO_API_KEY TRELLO_API_TOKEN=$TRELLO_API_TOKEN TRELLO_BOARD_ID=$TRELLO_BOARD_ID TRELLO_DEFAULT_LIST_ID=$TRELLO_DEFAULT_LIST_ID app-tests

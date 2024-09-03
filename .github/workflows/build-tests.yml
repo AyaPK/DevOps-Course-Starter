@@ -70,7 +70,7 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: Build Docker image
-      run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/todoapp:${{ github.sha }} -t ${{ secrets.DOCKERHUB_USERNAME }}/todoapp:latest .
+      run: docker build --target production -t ${{ secrets.DOCKERHUB_USERNAME }}/todoapp:${{ github.sha }} -t ${{ secrets.DOCKERHUB_USERNAME }}/todoapp:latest .
 
     - name: Push Docker image with SHA tag
       run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/todoapp:${{ github.sha }}
@@ -80,3 +80,23 @@ jobs:
 
     - name: Deploy latest image to Azure
       run: curl -dH -X POST '${{ secrets.AZURE_WEBHOOK }}'
+    
+    - name: Send Slack Notification on Success
+      if: success()
+      uses: slackapi/slack-github-action@v1.27.0
+      with:
+        channel-id: ${{ secrets.SLACK_CHANNEL }}
+        slack-message: |
+          *App successfully deployed!* :white_check_mark:
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_SECRET }}
+
+    - name: Send Slack Notification on Failure
+      if: failure()
+      uses: slackapi/slack-github-action@v1.27.0
+      with:
+        channel-id: ${{ secrets.SLACK_CHANNEL }}
+        slack-message: |
+          *App failed to deploy* :x:
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_SECRET }}

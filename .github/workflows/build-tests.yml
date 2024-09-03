@@ -54,3 +54,11 @@ jobs:
           *PR URL:* ${{ github.event.pull_request.url }}
       env:
         SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_SECRET }}
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+    - name: Echo Publishing
+      run: echo "Publishing!"

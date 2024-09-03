@@ -70,10 +70,13 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: Build Docker image
-      run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/todoapp:${{ github.sha }} .
+      run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/todoapp:${{ github.sha }} -t ${{ secrets.DOCKERHUB_USERNAME }}/todoapp:latest .
 
-    - name: Push Docker image
+    - name: Push Docker image with SHA tag
       run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/todoapp:${{ github.sha }}
+
+    - name: Push Docker image with latest tag
+      run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/todoapp:latest
 
     - name: Deploy latest image to Azure
       run: curl -dH -X POST '${{ secrets.AZURE_WEBHOOK }}'

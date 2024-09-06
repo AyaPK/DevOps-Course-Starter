@@ -128,3 +128,24 @@ You may also run the test suite within Docker:
 ```bash
 $ docker compose up test
 ```
+You can find the latest version of the Docker image on [DockerHub](https://hub.docker.com/repository/docker/ayastead/todoapp/general)
+
+## Deploying to Azure
+The ToDo App can be deployed as an Azure WebApp by following the below steps.
+
+1) Build the Docker Image (e.g.)
+    ```bash
+    $ docker build --target production -t ayastead/todoapp:todoapp .
+    ```
+2) Create an Azure WebApp, ensuring your Publish option is set to Docker Container, and contains the details to the above image
+3) Ensure any enviroment variables are added to `settings` > `Environment Variables` on your Azure WebApp
+4) Wait for the Docker Image to build and spin up
+
+To manually trigger a redeployment, hit the webhook with a POST request (e.g.)
+```bash
+$ curl -v -X POST '<webhook URL>'
+```
+You can find the webhook URL in the WebApp's `Deployment Center`
+
+## Live App
+The Live App can be accessed via [The Deployed Azure Webapp](https://ayaste-todoapp-fmfzg2h2gbf9etd9.uksouth-01.azurewebsites.net).

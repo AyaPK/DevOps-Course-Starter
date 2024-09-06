@@ -28,3 +28,13 @@ services:
     environment:
       - FLASK_DEBUG=false
     command: poetry run gunicorn -b 0.0.0.0:5000 "todo_app.app:create_app()"
+
+  test:
+    extends:
+      service: app
+    build:
+      context: .
+      target: test
+    environment:
+      - FLASK_DEBUG=false
+    command: poetry run pytest

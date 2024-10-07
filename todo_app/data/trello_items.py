@@ -61,41 +61,6 @@ class MongoJSONEncoder(json.JSONEncoder):
         return super().default(obj)
 
 
-def make_trello_request(endpoint, method="GET", params=None):
-    """
-    Method to make a Trello request
-
-    Args:
-        endpoint: The endpoint you would like to request
-        method: The type of request, e.g. "GET", "PUT", "POST"
-        params: A dict containing any additional parameters for the request
-
-    Returns:
-        A response object
-    """
-    url = f"https://api.trello.com/1/{endpoint}"
-
-    headers = {
-        "Accept": "application/json"
-    }
-
-    query = {
-        'key': os.getenv('TRELLO_API_KEY'),
-        'token': os.getenv('TRELLO_API_TOKEN'),
-    }
-
-    if params:
-        query.update(params)
-
-    response = requests.request(
-        method,
-        url,
-        headers=headers,
-        params=query
-    )
-    return response
-
-
 def get_all_lists_and_items():
     """
     Gets all lists and associated items from MongoDB.
@@ -139,49 +104,40 @@ def add_new_item(name, desc, due):
     return True if default_collection.insert_one(new_item) else False
 
 
-# def delete_item(item_id):
-#     """
-#     Deletes an item from the board
-#
-#     Args:
-#         item_id: The ID of the item to be deleted
-#
-#     Returns:
-#         The status code of the request as an integer
-#     """
-#     endpoint = f"cards/{item_id}"
-#     return make_trello_request(endpoint, method="DELETE").status_code
-
-
-def delete_item(item_id, list_name):
+def delete_item(item_id, list_id):
     """
     Deletes an item from MongoDB.
 
     Args:
-        item_id: The ID of the item to be deleted
+        list_id: The ID of the item to be deleted
         list_name: The name of the list the item is in
 
     Returns:
         Whether the deletion was successful (boolean)
     """
-    collection = db[list_name]
+    collection = db[list_id]
     result = collection.delete_one({'_id': ObjectId(item_id)})
     return result.deleted_count > 0
 
 
-def move_item(item_id, list_id):
+def move_item(item_id, current_list_id, new_list_id):
     """
-    Moves an item to a different list, changing its status
+    Moves an item to a different list by updating its list_id.
 
     Args:
         item_id: The ID of the item you'd like to move
-        list_id: The ID of the target list
+        current_list_id: The ID of the list the item is currently in
+        new_list_id: The ID of the target list
 
     Returns:
-        The status code of the request as an integer
+        Whether the update was successful or not
     """
-    endpoint = f"cards/{item_id}"
-    params = {
-        'idList': list_id
-    }
-    return make_trello_request(endpoint, method="PUT", params=params).status_code
+    current_collection = db[current_list_id]
+    new_collection = db[new_list_id]
+    item = current_collection.find_one({'_id': ObjectId(item_id)})
+
+    if item:
+        current_collection.delete_one({'_id': ObjectId(item_id)})
+        new_collection.insert_one(item)
+
+    return True

@@ -29,7 +29,7 @@ def create_app():
 
     @app.route("/move_item", methods=['POST'])
     def move_item_to_new_list():
-        if move_item(request.form.get('item-id'), request.form.get('list-id')) == 200:
+        if move_item(request.form.get('item-id'), request.form.get('current-list-id'), request.form.get('new-list-id')):
             return redirect('/')
         else:
             # Handle the error

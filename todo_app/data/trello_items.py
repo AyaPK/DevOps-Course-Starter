@@ -130,7 +130,7 @@ def move_item(item_id, current_list_id, new_list_id):
         new_list_id: The ID of the target list
 
     Returns:
-        Whether the update was successful or not
+        Whether the update was successful or not (boolean)
     """
     current_collection = db[current_list_id]
     new_collection = db[new_list_id]

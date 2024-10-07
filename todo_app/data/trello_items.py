@@ -4,6 +4,15 @@ from flask import session
 import requests
 import json
 import os
+import pymongo
+
+MONGO_URI = os.getenv('MONGO_CONNECTION_STRING')
+DATABASE_NAME = os.getenv('DATABASE_NAME')
+
+client = pymongo.MongoClient(MONGO_URI)
+db = client[DATABASE_NAME]
+lists = ["to-do", "doing", "done"]
+default_collection = db['to-do']
 
 
 class List:
@@ -93,25 +102,48 @@ def get_all_lists_and_items():
     return lists
 
 
+# def add_new_item(name, desc, due):
+#     """
+#     Adds a new item to the 'not-started' list
+#
+#     Args:
+#         name: The name of the item
+#         desc: The description of the item
+#
+#     Returns:
+#         The status code of the request as an integer
+#     """
+#     endpoint = "cards"
+#     params = {
+#         'idList': os.getenv('TRELLO_DEFAULT_LIST_ID'),
+#         'name': name,
+#         'desc': desc,
+#         'due': due
+#     }
+#     return make_trello_request(endpoint, method="POST", params=params).status_code
+
+
 def add_new_item(name, desc, due):
     """
-    Adds a new item to the 'not-started' list
+    Adds a new item to a specific list in MongoDB.
 
     Args:
         name: The name of the item
         desc: The description of the item
+        due: The due date for the item
+        list_id: The list ID to which the item should be added
 
     Returns:
-        The status code of the request as an integer
+        The inserted item ID as a string
     """
-    endpoint = "cards"
-    params = {
-        'idList': os.getenv('TRELLO_DEFAULT_LIST_ID'),
+    due_date = datetime.strptime(due+"T00:00:00.000000Z", "%Y-%m-%dT%H:%M:%S.%fZ") if due else None
+    print(due_date.__class__.__name__)
+    new_item = {
         'name': name,
         'desc': desc,
-        'due': due
+        'due': due_date,
     }
-    return make_trello_request(endpoint, method="POST", params=params).status_code
+    return True if default_collection.insert_one(new_item) else False
 
 
 def delete_item(item_id):

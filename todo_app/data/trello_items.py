@@ -5,6 +5,7 @@ import requests
 import json
 import os
 import pymongo
+from bson.objectid import ObjectId
 
 MONGO_URI = os.getenv('MONGO_CONNECTION_STRING')
 DATABASE_NAME = os.getenv('DATABASE_NAME')
@@ -21,12 +22,11 @@ class List:
         self.name = name
         self.items = []
         for item in items:
-            self.items.append(Item.from_trello_response(item))
+            self.items.append(Item.from_mongo_response(item))
 
     @classmethod
-    def from_trello_response(cls, response):
+    def from_mongo_response(cls, response):
         return cls(response['id'], response['name'], response['cards'])
-
 
 class Item:
     def __init__(self, id, name, desc, due=None):
@@ -35,7 +35,7 @@ class Item:
         self.desc = desc
 
         if due:
-            self.due = datetime.strptime(due, "%Y-%m-%dT%H:%M:%S.%fZ").date()
+            self.due = datetime.strptime(due, "%Y-%m-%dT%H:%M:%S").date()
         else:
             self.due = None
 
@@ -46,8 +46,17 @@ class Item:
         return f"Due by: {self.due}" if self.due else "No due date"
 
     @classmethod
-    def from_trello_response(cls, response):
-        return cls(response['id'], response['name'], response['desc'], response['due'])
+    def from_mongo_response(cls, response):
+        return cls(response['_id'], response['name'], response['desc'], response['due'])
+
+
+class MongoJSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, ObjectId):
+            return str(obj)
+        elif isinstance(obj, datetime):
+            return obj.isoformat()
+        return super().default(obj)
 
 
 def make_trello_request(endpoint, method="GET", params=None):
@@ -87,40 +96,24 @@ def make_trello_request(endpoint, method="GET", params=None):
 
 def get_all_lists_and_items():
     """
-    Gets all lists on the trello boards, as well as the items associated with them
-
+    Gets all lists and associated items from MongoDB.
     Returns:
         An array of List objects
     """
-    endpoint = f"boards/{os.getenv('TRELLO_BOARD_ID')}/lists"
-    params = {
-        'cards': "open"
-    }
-    response = make_trello_request(endpoint, params=params, method="GET")
-    result = json.loads(response.text)
-    lists = [List.from_trello_response(lst) for lst in result]
-    return lists
+    collections_data = []
+    for collection_name in db.list_collection_names():
+        documents = list(db[collection_name].find({}))
+        data = {
+            "id": collection_name,
+            "name": collection_name.capitalize(),
+            "cards": [
+                doc for doc in documents
+            ]
+        }
+        collections_data.append(data)
+    collections_json = json.loads(json.dumps(collections_data, indent=4, cls=MongoJSONEncoder))
 
-
-# def add_new_item(name, desc, due):
-#     """
-#     Adds a new item to the 'not-started' list
-#
-#     Args:
-#         name: The name of the item
-#         desc: The description of the item
-#
-#     Returns:
-#         The status code of the request as an integer
-#     """
-#     endpoint = "cards"
-#     params = {
-#         'idList': os.getenv('TRELLO_DEFAULT_LIST_ID'),
-#         'name': name,
-#         'desc': desc,
-#         'due': due
-#     }
-#     return make_trello_request(endpoint, method="POST", params=params).status_code
+    return [List.from_mongo_response(lst) for lst in collections_json]
 
 
 def add_new_item(name, desc, due):
@@ -131,13 +124,11 @@ def add_new_item(name, desc, due):
         name: The name of the item
         desc: The description of the item
         due: The due date for the item
-        list_id: The list ID to which the item should be added
 
     Returns:
-        The inserted item ID as a string
+        Whether the addition was successful (boolean)
     """
     due_date = datetime.strptime(due+"T00:00:00.000000Z", "%Y-%m-%dT%H:%M:%S.%fZ") if due else None
-    print(due_date.__class__.__name__)
     new_item = {
         'name': name,
         'desc': desc,

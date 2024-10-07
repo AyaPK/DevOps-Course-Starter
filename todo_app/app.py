@@ -22,10 +22,9 @@ def create_app():
 
     @app.route("/delete_item", methods=['POST'])
     def delete_selected_item():
-        if delete_item(request.form.get('item-id')) == 200:
+        if delete_item(request.form.get('item-id'), request.form.get('list-id')):
             return redirect('/')
         else:
-            # Handle the error
             pass
 
     @app.route("/move_item", methods=['POST'])

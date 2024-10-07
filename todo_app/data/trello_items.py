@@ -22,17 +22,19 @@ class List:
         self.name = name
         self.items = []
         for item in items:
-            self.items.append(Item.from_mongo_response(item))
+            self.items.append(Item.from_mongo_response(item, self.id))
 
     @classmethod
     def from_mongo_response(cls, response):
         return cls(response['id'], response['name'], response['cards'])
 
+
 class Item:
-    def __init__(self, id, name, desc, due=None):
+    def __init__(self, id, name, desc, list_id, due=None):
         self.id = id
         self.name = name
         self.desc = desc
+        self.list_id = list_id
 
         if due:
             self.due = datetime.strptime(due, "%Y-%m-%dT%H:%M:%S").date()
@@ -46,8 +48,8 @@ class Item:
         return f"Due by: {self.due}" if self.due else "No due date"
 
     @classmethod
-    def from_mongo_response(cls, response):
-        return cls(response['_id'], response['name'], response['desc'], response['due'])
+    def from_mongo_response(cls, response, list_id):
+        return cls(response['_id'], response['name'], response['desc'], list_id, response['due'])
 
 
 class MongoJSONEncoder(json.JSONEncoder):
@@ -137,18 +139,34 @@ def add_new_item(name, desc, due):
     return True if default_collection.insert_one(new_item) else False
 
 
-def delete_item(item_id):
+# def delete_item(item_id):
+#     """
+#     Deletes an item from the board
+#
+#     Args:
+#         item_id: The ID of the item to be deleted
+#
+#     Returns:
+#         The status code of the request as an integer
+#     """
+#     endpoint = f"cards/{item_id}"
+#     return make_trello_request(endpoint, method="DELETE").status_code
+
+
+def delete_item(item_id, list_name):
     """
-    Deletes an item from the board
+    Deletes an item from MongoDB.
 
     Args:
         item_id: The ID of the item to be deleted
+        list_name: The name of the list the item is in
 
     Returns:
-        The status code of the request as an integer
+        Whether the deletion was successful (boolean)
     """
-    endpoint = f"cards/{item_id}"
-    return make_trello_request(endpoint, method="DELETE").status_code
+    collection = db[list_name]
+    result = collection.delete_one({'_id': ObjectId(item_id)})
+    return result.deleted_count > 0
 
 
 def move_item(item_id, list_id):

@@ -15,6 +15,7 @@
                 <form class="mt-auto" action="/delete_item" method="post"
                       id="delete-{{ item.id }}">
                     <input type="hidden" name="item-id" value="{{ item.id }}">
+                    <input type="hidden" name="list-id" value="{{ item.list_id }}">
                     <button id="delete-task-btn" class="btn btn-danger" type="submit" form="delete-{{ item.id }}"
                             value="Submit"><i class="fa-solid fa-trash"></i> Delete task
                     </button>

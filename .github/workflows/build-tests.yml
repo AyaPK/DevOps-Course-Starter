@@ -14,89 +14,98 @@ jobs:
     name: Build and test
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Run Snyk to check for vulnerabilities
-      uses: snyk/actions/python@master
-      with:
-        command: test
-      env:
-        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      continue-on-error: true
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/python@master
+        with:
+          command: test
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        continue-on-error: true
 
-    - run: docker build --target test -t app-tests .
-    - run: docker run -e SECRET_KEY=${{ secrets.SECRET_KEY }} -e TRELLO_API_KEY=${{ secrets.TRELLO_API_KEY }} -e TRELLO_API_TOKEN=${{ secrets.TRELLO_API_TOKEN }} -e TRELLO_BOARD_ID=${{ secrets.TRELLO_BOARD_ID }} -e TRELLO_DEFAULT_LIST_ID=${{ secrets.TRELLO_DEFAULT_LIST_ID }} -e DATABASE_NAME=${{ secrets.DATABASE_NAME }} app-tests
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
 
-    - name: Send Slack Notification on Success
-      if: success()
-      uses: slackapi/slack-github-action@v1.27.0
-      with:
-        channel-id: ${{ secrets.SLACK_CHANNEL }}
-        slack-message: |
-          *Build Succeeded!* :white_check_mark:
-          *Commit:* ${{ github.event.head_commit.message }}
-          *Committer:* ${{ github.event.head_commit.committer.name }}
-          *Branch:* ${{ github.ref_name }}
-          *PR URL:* ${{ github.event.pull_request.url }}
-      env:
-        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_SECRET }}
+      - name: Build application images
+        run: docker-compose build
 
-    - name: Send Slack Notification on Failure
-      if: failure()
-      uses: slackapi/slack-github-action@v1.27.0
-      with:
-        channel-id: ${{ secrets.SLACK_CHANNEL }}
-        slack-message: |
-          *Build Failed!* :x:
-          *Commit:* ${{ github.event.head_commit.message }}
-          *Committer:* ${{ github.event.head_commit.committer.name }}
-          *Branch:* ${{ github.ref_name }}
-          *PR URL:* ${{ github.event.pull_request.url }}
-      env:
-        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_SECRET }}
+      - name: Run tests
+        run: |
+          docker-compose up -d mongodb  # Start the MongoDB service
+          docker-compose run --rm test   # Run the tests
+          docker-compose down             # Stop the services after tests
+
+      - name: Send Slack Notification on Success
+        if: success()
+        uses: slackapi/slack-github-action@v1.27.0
+        with:
+          channel-id: ${{ secrets.SLACK_CHANNEL }}
+          slack-message: |
+            *Build Succeeded!* :white_check_mark:
+            *Commit:* ${{ github.event.head_commit.message }}
+            *Committer:* ${{ github.event.head_commit.committer.name }}
+            *Branch:* ${{ github.ref_name }}
+            *PR URL:* ${{ github.event.pull_request.url }}
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_SECRET }}
+
+      - name: Send Slack Notification on Failure
+        if: failure()
+        uses: slackapi/slack-github-action@v1.27.0
+        with:
+          channel-id: ${{ secrets.SLACK_CHANNEL }}
+          slack-message: |
+            *Build Failed!* :x:
+            *Commit:* ${{ github.event.head_commit.message }}
+            *Committer:* ${{ github.event.head_commit.committer.name }}
+            *Branch:* ${{ github.ref_name }}
+            *PR URL:* ${{ github.event.pull_request.url }}
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_SECRET }}
 
   deploy:
-    name: deploy
+    name: Deploy
     runs-on: ubuntu-latest
     needs: build
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Login to Docker Hub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Build Docker image
-      run: docker build --target production -t ${{ secrets.DOCKERHUB_USERNAME }}/todoapp:${{ github.sha }} -t ${{ secrets.DOCKERHUB_USERNAME }}/todoapp:latest .
+      - name: Build Docker image
+        run: docker build --target production -t ${{ secrets.DOCKERHUB_USERNAME }}/todoapp:${{ github.sha }} -t ${{ secrets.DOCKERHUB_USERNAME }}/todoapp:latest .
 
-    - name: Push Docker image with SHA tag
-      run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/todoapp:${{ github.sha }}
+      - name: Push Docker image with SHA tag
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/todoapp:${{ github.sha }}
 
-    - name: Push Docker image with latest tag
-      run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/todoapp:latest
+      - name: Push Docker image with latest tag
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/todoapp:latest
 
-    - name: Deploy latest image to Azure
-      run: curl -dH -X POST '${{ secrets.AZURE_WEBHOOK }}'
-    
-    - name: Send Slack Notification on Success
-      if: success()
-      uses: slackapi/slack-github-action@v1.27.0
-      with:
-        channel-id: ${{ secrets.SLACK_CHANNEL }}
-        slack-message: |
-          *App successfully deployed!* :white_check_mark:
-      env:
-        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_SECRET }}
+      - name: Deploy latest image to Azure
+        run: curl -dH -X POST '${{ secrets.AZURE_WEBHOOK }}'
 
-    - name: Send Slack Notification on Failure
-      if: failure()
-      uses: slackapi/slack-github-action@v1.27.0
-      with:
-        channel-id: ${{ secrets.SLACK_CHANNEL }}
-        slack-message: |
-          *App failed to deploy* :x:
-      env:
-        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_SECRET }}
+      - name: Send Slack Notification on Success
+        if: success()
+        uses: slackapi/slack-github-action@v1.27.0
+        with:
+          channel-id: ${{ secrets.SLACK_CHANNEL }}
+          slack-message: |
+            *App successfully deployed!* :white_check_mark:
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_SECRET }}
+
+      - name: Send Slack Notification on Failure
+        if: failure()
+        uses: slackapi/slack-github-action@v1.27.0
+        with:
+          channel-id: ${{ secrets.SLACK_CHANNEL }}
+          slack-message: |
+            *App failed to deploy* :x:
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_SECRET }}

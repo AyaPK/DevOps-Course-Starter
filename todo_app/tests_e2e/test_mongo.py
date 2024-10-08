@@ -23,7 +23,6 @@ def app_with_temp_board():
     client = pymongo.MongoClient(mongo_string)
     db = client["to_do_test"]
     lists = ["to-do", "doing", "done"]
-    default_collection = db['to-do']
     for lst in lists:
         collection = db[lst]
         temp_item = collection.insert_one({})
@@ -38,7 +37,7 @@ def app_with_temp_board():
     yield application
 
     thread.join(1)
-    client.drop_database(db)
+    client.drop_database("to_do_test")
 
 
 def select_card(driver, card_name):

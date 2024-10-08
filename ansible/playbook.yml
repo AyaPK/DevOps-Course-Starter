@@ -3,12 +3,8 @@
   remote_user: ec2-user
 
   vars_prompt:
-    - name: trello_api_key
-      prompt: "Trello API Key: > "
-      private: yes
-
-    - name: trello_api_token
-      prompt: "Trello API Token: > "
+    - name: mongo_connection_string
+      prompt: "Mongo Connection String: > "
       private: yes
 
   tasks:

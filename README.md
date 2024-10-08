@@ -74,7 +74,7 @@ $ poetry run pytest todo_app\tests
 ```
 or
 ```bash
-$ poetry run pytest todo_app\tests_e2e\test_trello.py 
+$ poetry run pytest todo_app\tests_e2e\test_mongo.py 
 ```
 
 Additionally, you can run a single test with the `<test_directory>::<test_name>` argument. E.g.

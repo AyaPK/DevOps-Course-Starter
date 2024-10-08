@@ -28,13 +28,13 @@ jobs:
         uses: docker/setup-buildx-action@v1
 
       - name: Build application images
-        run: docker-compose build
+        run: docker compose build
 
       - name: Run tests
         run: |
-          docker-compose up -d mongodb  # Start the MongoDB service
-          docker-compose run --rm test   # Run the tests
-          docker-compose down             # Stop the services after tests
+          docker compose up -d mongodb  # Start the MongoDB service
+          docker compose run --rm test   # Run the tests
+          docker compose down             # Stop the services after tests
 
       - name: Send Slack Notification on Success
         if: success()

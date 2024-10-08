@@ -1,5 +1,5 @@
 from todo_app.viewmodels import IndexViewModel
-from todo_app.data.trello_items import Item, List
+from todo_app.data.mongo_items import Item, List
 
 test_items = [
     {"id": 1, "name": "Task 1", "desc": "The first task", "due": ""},

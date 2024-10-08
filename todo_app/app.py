@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect
 from todo_app.flask_config import Config
-from todo_app.data.trello_items import add_new_item, delete_item, move_item, get_all_lists_and_items
+from todo_app.data.mongo_items import add_new_item, delete_item, move_item, get_all_lists_and_items
 from todo_app.viewmodels import IndexViewModel
 
 

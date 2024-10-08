@@ -14,6 +14,10 @@ client = pymongo.MongoClient(MONGO_URI)
 db = client[DATABASE_NAME]
 lists = ["to-do", "doing", "done"]
 default_collection = db['to-do']
+for lst in lists:  # Ensuring collections exist, makes them if they don't
+    collection = db[lst]
+    temp_item = collection.insert_one({})
+    collection.delete_one({'_id': ObjectId(temp_item.inserted_id)})
 
 
 class List:

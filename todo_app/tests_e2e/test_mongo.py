@@ -19,7 +19,8 @@ import pytest
 @pytest.fixture(scope="module")
 def app_with_temp_board():
     load_dotenv(override=True)
-    client = pymongo.MongoClient("mongodb://mongodb:27017")
+    mongo_string = os.environ["MONGO_CONNECTION_STRING"]
+    client = pymongo.MongoClient(mongo_string)
     db = client["to_do_test"]
     lists = ["to-do", "doing", "done"]
     default_collection = db['to-do']

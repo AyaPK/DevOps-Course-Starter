@@ -4,17 +4,8 @@ import os
 import pymongo
 from bson.objectid import ObjectId
 
-MONGO_URI = os.getenv('MONGO_CONNECTION_STRING')
-DATABASE_NAME = os.getenv('DATABASE_NAME')
-
-client = pymongo.MongoClient(MONGO_URI)
-db = client[DATABASE_NAME]
-lists = ["to-do", "doing", "done"]
-default_collection = db['to-do']
-for lst in lists:  # Ensuring collections exist, makes them if they don't
-    collection = db[lst]
-    temp_item = collection.insert_one({})
-    collection.delete_one({'_id': ObjectId(temp_item.inserted_id)})
+db = None
+default_collection = None
 
 
 class List:
@@ -51,6 +42,21 @@ class Item:
     @classmethod
     def from_mongo_response(cls, response, list_id):
         return cls(response['_id'], response['name'], response['desc'], list_id, response['due'])
+
+
+def init_db():
+    MONGO_URI = os.getenv('MONGO_CONNECTION_STRING')
+    DATABASE_NAME = os.getenv('DATABASE_NAME')
+
+    client = pymongo.MongoClient(MONGO_URI)
+    global db, default_collection
+    db = client[DATABASE_NAME]
+    lists = ["to-do", "doing", "done"]
+    default_collection = db['to-do']
+    for lst in lists:  # Ensuring collections exist, makes them if they don't
+        collection = db[lst]
+        temp_item = collection.insert_one({})
+        collection.delete_one({'_id': ObjectId(temp_item.inserted_id)})
 
 
 class MongoJSONEncoder(json.JSONEncoder):

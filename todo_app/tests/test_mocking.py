@@ -1,18 +1,19 @@
 import os
+
+import pymongo
 import pytest
 import mongomock
 from dotenv import load_dotenv, find_dotenv
 from todo_app import app
-from pymongo import MongoClient
+import pymongo
+
 
 @pytest.fixture
 def client(monkeypatch):
     file_path = find_dotenv(".env.test")
     load_dotenv(file_path, override=True)
 
-    mock_client = mongomock.MongoClient()
-    monkeypatch.setattr(MongoClient, "__init__", lambda self, *args, **kwargs: None)
-    monkeypatch.setattr(MongoClient, "get_database", lambda self, *args, **kwargs: mock_client['todo_app_db'])
+    monkeypatch.setattr('pymongo.MongoClient', mongomock.MongoClient)
 
     test_app = app.create_app()
     with test_app.test_client() as client:
@@ -20,7 +21,9 @@ def client(monkeypatch):
 
 
 def test_index_page(client):
-    db = MongoClient().get_database("todo_app_db")  # The mocked database
+    MONGO_URI = os.getenv('MONGO_CONNECTION_STRING')
+    DATABASE_NAME = os.getenv('DATABASE_NAME')
+    db = pymongo.MongoClient(MONGO_URI).get_database(DATABASE_NAME)
     db.doing.insert_one({
         "id": 1,
         "name": "test_card",

@@ -17,6 +17,8 @@ services:
       - ./todo_app:/todo_app/todo_app
     environment:
       - FLASK_DEBUG=true
+    depends_on:
+      - mongodb
     command: poetry run flask run --host=0.0.0.0
 
   production:
@@ -37,4 +39,19 @@ services:
       target: test
     environment:
       - FLASK_DEBUG=false
+    depends_on:
+      - mongodb
     command: poetry run pytest
+
+  mongodb:
+    image: mongo:5.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: to_do_list
+    command: ["mongod", "--noauth"]
+
+volumes:
+  mongo_data:

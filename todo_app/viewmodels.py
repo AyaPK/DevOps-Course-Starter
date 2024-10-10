@@ -3,7 +3,7 @@ class IndexViewModel:
         self._lists = lists
 
     def get_items_with_status(self, status):
-        return [item for _list in self._lists if _list.name == status for item in _list.items]
+        return [item for _list in self._lists if _list.id == status for item in _list.items]
 
     @property
     def lists(self):
@@ -11,13 +11,13 @@ class IndexViewModel:
 
     @property
     def to_do_items(self):
-        return self.get_items_with_status("To Do")
+        return self.get_items_with_status("to-do")
 
     @property
     def doing(self):
-        return self.get_items_with_status("Doing")
+        return self.get_items_with_status("doing")
 
     @property
     def done_items(self):
-        return self.get_items_with_status("Done")
+        return self.get_items_with_status("done")
 

@@ -4,6 +4,8 @@
 
 ## System Requirements
 
+### This project uses Docker for local development, ensure you have Docker installed before continuing.
+
 The project uses poetry for Python to create an isolated environment and manage package dependencies. To prepare your system, ensure you have an official distribution of Python version 3.8+ and install Poetry using one of the following commands (as instructed by the [poetry documentation](https://python-poetry.org/docs/#system-requirements)):
 
 ### Poetry installation (Bash)
@@ -38,40 +40,26 @@ $ cp .env.template .env  # (first time only)
 
 The `.env` file is used by flask to set environment variables when running `flask run`. This enables things like development mode (which also enables features like hot reloading when you make a file change). There's also a [SECRET_KEY](https://flask.palletsprojects.com/en/2.3.x/config/#SECRET_KEY) variable which is used to encrypt the flask session cookie.
 
-## Adding environment variables
-
-The app communicates with the Trello API to function, and so you will need to add some details to the .env file in order for it to work.
-
-Create a Trello power-up to get an API key and Token, these can be easily obtained by following the [Trello API docs](https://developer.atlassian.com/cloud/trello/guides/rest-api/api-introduction/#managing-your-api-key).
-
-Once you have your API Key and Token, and them to your environment variables under `TRELLO_API_KEY` and `TRELLO_API_TOKEN`
-
-Finally, you will need to make a Trello Board with at least one List. Once you have created them, add the ID for both the Board and the List to the environment variables under `TRELLO_BOARD_ID` and `TRELLO_DEFAULT_LIST_ID`.
-(As the name suggests, this list is the default location for newly made items).
-
-## Setting up Trello
-
-Your Trello board is expected to have at least three lists, named `To Do`, `Doing`, and `Done`, where the `To Do` list is used to populate the above `TRELLO_DEFAULT_LIST_ID`.
-
-Further columns may be added, and can/should work, but are not officially supported.
-
 ## Running the App
 
-Once the all dependencies have been installed, start the Flask app in development mode within the Poetry environment by running:
+Once all dependencies have been installed, start the Flask app in development mode within the Poetry environment by running:
 ```bash
-$ poetry run flask run
+$ docker compose up development
 ```
 
-You should see output similar to the following:
+Docker will set up your development container, and you should see output similar to the following:
 ```bash
- * Serving Flask app 'todo_app/app'
- * Debug mode: on
-WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
- * Running on http://127.0.0.1:5000
-Press CTRL+C to quit
- * Restarting with stat
- * Debugger is active!
- * Debugger PIN: 113-666-066
+Attaching to development-1
+development-1  |  * Serving Flask app 'todo_app/app'
+development-1  |  * Debug mode: on
+development-1  | WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.                                                                                                                                                                                 
+development-1  |  * Running on all addresses (0.0.0.0)
+development-1  |  * Running on http://127.0.0.1:5000                                                                                                                                                                                                                                                                    
+development-1  |  * Running on http://172.18.0.3:5000                                                                                                                                                                                                                                                                   
+development-1  | Press CTRL+C to quit                                                                                                                                                                                                                                                                                   
+development-1  |  * Restarting with stat                                                                                                                                                                                                                                                                                
+development-1  |  * Debugger is active!                                                                                                                                                                                                                                                                                 
+development-1  |  * Debugger PIN: 214-115-548
 ```
 Now visit [`http://localhost:5000/`](http://localhost:5000/) in your web browser to view the app.
 
@@ -86,7 +74,7 @@ $ poetry run pytest todo_app\tests
 ```
 or
 ```bash
-$ poetry run pytest todo_app\tests_e2e\test_trello.py 
+$ poetry run pytest todo_app\tests_e2e\test_mongo.py 
 ```
 
 Additionally, you can run a single test with the `<test_directory>::<test_name>` argument. E.g.
@@ -129,6 +117,15 @@ You may also run the test suite within Docker:
 $ docker compose up test
 ```
 You can find the latest version of the Docker image on [DockerHub](https://hub.docker.com/repository/docker/ayastead/todoapp/general)
+
+## MongoDB setup
+
+This app uses MongoDB to persist data storage.
+When developing locally, Docker will handle the database, but running in production will require a database set up.
+
+With a Mongo database set up, ensure that the following environment variables exist when deploying:
+- `MONGO_CONNECTION_STRING`: The connection string for your MongoDB
+- `DATABASE_NAME`: The name of the database to be used (It will be created if it doesn't exist)
 
 ## Deploying to Azure
 The ToDo App can be deployed as an Azure WebApp by following the below steps.

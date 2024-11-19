@@ -146,3 +146,7 @@ You can find the webhook URL in the WebApp's `Deployment Center`
 
 ## Live App
 The Live App can be accessed via [The Deployed Azure Webapp](https://ayaste-todoapp-fmfzg2h2gbf9etd9.uksouth-01.azurewebsites.net).
+
+## Database Encryption
+The application's database uses [Azure MongoDB](https://learn.microsoft.com/en-us/azure/cosmos-db/mongodb/introduction) for persistent storage.
+Data within this database is encrypted at rest, and decrypted only using secure key storage, encrypted networks, and cryptographic APIs.

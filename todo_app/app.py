@@ -1,4 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
+from werkzeug.middleware.proxy_fix import ProxyFix
+
 from todo_app.flask_config import Config
 from todo_app.data.mongo_items import init_db, add_new_item, delete_item, move_item, get_all_lists_and_items
 from todo_app.viewmodels import IndexViewModel
@@ -8,6 +10,7 @@ from flask_dance.contrib.github import github
 
 def create_app():
     app = Flask(__name__)
+    app.wsgi_app = ProxyFix(app.wsgi_app)
     app.config.from_object(Config())
     init_db()
 

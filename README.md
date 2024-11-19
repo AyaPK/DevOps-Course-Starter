@@ -127,16 +127,24 @@ With a Mongo database set up, ensure that the following environment variables ex
 - `MONGO_CONNECTION_STRING`: The connection string for your MongoDB
 - `DATABASE_NAME`: The name of the database to be used (It will be created if it doesn't exist)
 
+## Oauth
+This application uses Github Oauth to authorise users. Ensure that you have registered the app with Github Oauth
+(`settings > developer settings > Oauth apps`) and added the appropriate secrets to your `.env` file.
+
 ## Deploying to Azure
 The ToDo App can be deployed as an Azure WebApp by following the below steps.
 
 1) Build the Docker Image (e.g.)
     ```bash
-    $ docker build --target production -t ayastead/todoapp:todoapp .
+    $ docker build --target production -t <DOCKER_USERNAME>/todoapp:latest .
     ```
-2) Create an Azure WebApp, ensuring your Publish option is set to Docker Container, and contains the details to the above image
-3) Ensure any enviroment variables are added to `settings` > `Environment Variables` on your Azure WebApp
-4) Wait for the Docker Image to build and spin up
+2) Publish the Docker image to DockerHub
+   ```bash
+   $ docker push <DOCKER_USERNAME>/todoapp:latest
+   ```
+3) Create an Azure WebApp, ensuring your Publish option is set to Docker Container, and contains the details to the above image
+4) Ensure any enviroment variables are added to `settings` > `Environment Variables` on your Azure WebApp
+5) Wait for the Docker Image to build and spin up
 
 To manually trigger a redeployment, hit the webhook with a POST request (e.g.)
 ```bash

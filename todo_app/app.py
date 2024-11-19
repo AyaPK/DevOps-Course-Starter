@@ -1,7 +1,9 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, url_for
 from todo_app.flask_config import Config
 from todo_app.data.mongo_items import init_db, add_new_item, delete_item, move_item, get_all_lists_and_items
 from todo_app.viewmodels import IndexViewModel
+from todo_app.oauth import blueprint
+from flask_dance.contrib.github import github
 
 
 def create_app():
@@ -9,8 +11,12 @@ def create_app():
     app.config.from_object(Config())
     init_db()
 
+    app.register_blueprint(blueprint, url_prefix="/login")
+
     @app.route('/')
     def index():
+        if not github.authorized:
+            return redirect(url_for("github.login"))
         return render_template('index.html', view_model=(IndexViewModel(get_all_lists_and_items())))
 
     @app.route('/item', methods=['POST'])

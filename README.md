@@ -131,6 +131,11 @@ With a Mongo database set up, ensure that the following environment variables ex
 This application uses Github Oauth to authorise users. Ensure that you have registered the app with Github Oauth
 (`settings > developer settings > Oauth apps`) and added the appropriate secrets to your `.env` file.
 
+Ensure that when deploying the app, the deployed environment also has these environment variables.
+
+- `OAUTH_CLIENT_ID`: Your Github app's Client ID
+- `OAUTH_CLIENT_SECRET`: Your Github app's Client secret
+
 ## Deploying to Azure
 The ToDo App can be deployed as an Azure WebApp by following the below steps.
 

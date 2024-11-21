@@ -37,6 +37,8 @@ services:
     build:
       context: .
       target: test
+    volumes:
+      - ./todo_app:/todo_app/todo_app
     environment:
       - FLASK_DEBUG=false
     depends_on:

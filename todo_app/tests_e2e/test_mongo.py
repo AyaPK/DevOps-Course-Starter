@@ -4,7 +4,9 @@ from time import sleep
 from threading import Thread
 
 import pymongo
+from _pytest.monkeypatch import MonkeyPatch
 from bson import ObjectId
+from flask_dance.consumer.storage import MemoryStorage
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
@@ -15,10 +17,23 @@ from dotenv import load_dotenv
 from todo_app import app
 import pytest
 
+from todo_app.oauth import blueprint
+
 
 @pytest.fixture(scope="module")
-def app_with_temp_board():
+def module_scoped_monkeypatch():
+    monkeypatch = MonkeyPatch()
+    yield monkeypatch
+    monkeypatch.undo()
+
+
+@pytest.fixture(scope="module")
+def app_with_temp_board(module_scoped_monkeypatch):
     load_dotenv(override=True)
+
+    storage = MemoryStorage({"access_token": "fake-token"})
+    module_scoped_monkeypatch.setattr(blueprint, 'storage', storage)
+
     mongo_string = os.environ["MONGO_CONNECTION_STRING"]
     client = pymongo.MongoClient(mongo_string)
     db = client["to_do_test"]
